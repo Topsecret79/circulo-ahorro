@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0f1d" />
+      <stop offset="100%" stop-color="#022c22" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Background squircle -->
+  <rect width="512" height="512" rx="115" fill="url(#bgGrad)" />
+
+  <!-- Outer circular arrows / circle of savings -->
+  <g filter="url(#shadow)">
+    <!-- Rotating dots/nodes representing 10 participants in a circle -->
+    <!-- Center Coin -->
+    <circle cx="256" cy="256" r="140" fill="url(#goldGrad)" stroke="#fef3c7" stroke-width="6" />
+    <circle cx="256" cy="256" r="115" fill="none" stroke="#b45309" stroke-width="4" stroke-dasharray="10 6" />
+
+    <!-- Big Euro / Dollar Symbol inside coin -->
+    <text x="256" y="295" font-family="-apple-system, sans-serif" font-size="120" font-weight="900" fill="#78350f" text-anchor="middle">€</text>
+  </g>
+
+  <!-- Circle Nodes for Participants -->
+  <!-- 10 dots around the circle -->
+  <g fill="url(#emeraldGrad)" stroke="#ffffff" stroke-width="3">
+    <circle cx="256" cy="65" r="16" />
+    <circle cx="368" cy="101" r="16" />
+    <circle cx="437" cy="197" r="16" />
+    <circle cx="437" cy="315" r="16" />
+    <circle cx="368" cy="411" r="16" />
+    <circle cx="256" cy="447" r="16" />
+    <circle cx="144" cy="411" r="16" />
+    <circle cx="75" cy="315" r="16" />
+    <circle cx="75" cy="197" r="16" />
+    <circle cx="144" cy="101" r="16" />
+  </g>
+
+  <!-- Checkmark on one node to show turn/payment -->
+  <circle cx="256" cy="65" r="22" fill="#fbbf24" stroke="#ffffff" stroke-width="3" />
+  <path d="M246 65 l7 7 l14 -14" fill="none" stroke="#78350f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

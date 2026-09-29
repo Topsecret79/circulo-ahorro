@@ -1,0 +1,2102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0f1d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Ahorro">
+  <meta name="description" content="Gestión mensual de grupo de ahorro, tanda y turnos de cobro">
+  
+  <title>Círculo de Ahorro y Tanda Mensual</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <style>
+/* Estilos Móviles Profesionales: Círculo de Ahorro y Tanda Mensual */
+:root {
+  --bg-primary: #0a0f1d;
+  --bg-card: #131c31;
+  --bg-card-hover: #1a2642;
+  --bg-elevated: #1e2c4c;
+  --border-color: #263659;
+  --border-active: #3b82f6;
+
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+
+  --emerald: #10b981;
+  --emerald-light: #34d399;
+  --emerald-glow: rgba(16, 185, 129, 0.25);
+
+  --gold: #f59e0b;
+  --gold-light: #fbbf24;
+  --gold-glow: rgba(245, 158, 11, 0.22);
+
+  --sky: #0ea5e9;
+  --danger: #ef4444;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  padding-top: var(--safe-top);
+  padding-bottom: calc(75px + var(--safe-bottom));
+}
+
+/* Encabezado */
+.app-header {
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid var(--border-color);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-icon {
+  font-size: 1.6rem;
+}
+
+.brand-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+}
+
+.brand-badge {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #0b0f19;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+}
+
+/* Barra inferior de navegación */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(65px + var(--safe-bottom));
+  padding-bottom: var(--safe-bottom);
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 900;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.nav-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 4px 0;
+  gap: 3px;
+}
+
+.nav-tab .tab-icon {
+  font-size: 1.35rem;
+  transition: transform 0.2s;
+}
+
+.nav-tab .tab-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.nav-tab.active {
+  color: var(--emerald);
+}
+
+.nav-tab.active .tab-icon {
+  transform: translateY(-2px);
+}
+
+/* Contenedor Principal */
+.main-container {
+  flex: 1;
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 14px;
+}
+
+.tab-pane {
+  display: none;
+  flex-direction: column;
+  gap: 14px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.tab-pane.active {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Selector de Mes / Ronda */
+.round-nav-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 12px 14px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.round-nav-btn {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.round-nav-btn:active {
+  transform: scale(0.94);
+  background: var(--border-color);
+}
+
+.round-nav-info {
+  text-align: center;
+}
+
+.round-nav-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.round-nav-sub {
+  font-size: 0.78rem;
+  color: var(--emerald);
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+/* ==========================================================
+   TARJETA DESTACADA: A QUIÉN LE TOCA COBRAR
+   ========================================================== */
+.beneficiary-hero-card {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(16, 185, 129, 0.08));
+  border: 2px solid var(--gold);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.beneficiary-hero-card::after {
+  content: '🎯';
+  position: absolute;
+  right: -10px;
+  bottom: -15px;
+  font-size: 5.5rem;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+.hero-tag {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--gold-light);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hero-beneficiary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hero-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hero-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: #0b0f19;
+  font-size: 1.4rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px var(--gold-glow);
+}
+
+.hero-name {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.hero-pot-amount {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--emerald-light);
+  text-align: right;
+}
+
+.hero-pot-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* Botón de Entrega del Bote */
+.btn-deliver-pot {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-weight: 800;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-deliver-pot.delivered {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #0b0f19;
+  border-color: #10b981;
+  box-shadow: 0 4px 14px var(--emerald-glow);
+}
+
+.btn-deliver-pot:active {
+  transform: scale(0.98);
+}
+
+/* ==========================================================
+   TARJETA: QUIÉN SIGUE EN LA LISTA
+   ========================================================== */
+.next-in-line-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.next-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--sky);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.next-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-top: 2px;
+}
+
+.next-badge {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+}
+
+/* ==========================================================
+   PROGRESS BAR DE RECAUDACIÓN
+   ========================================================== */
+.collection-progress-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progress-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-muted);
+}
+
+.progress-numbers {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.progress-numbers strong {
+  color: var(--emerald-light);
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #34d399);
+  border-radius: var(--radius-full);
+  transition: width 0.35s ease;
+}
+
+.progress-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+/* ==========================================================
+   LISTA DE PAGOS DEL MES
+   ========================================================== */
+.payments-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.payments-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 4px;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.quick-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.quick-btn:active {
+  background: var(--bg-elevated);
+}
+
+.payments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.payment-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.payment-card:active {
+  transform: scale(0.98);
+}
+
+.payment-card.paid {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.14), rgba(6, 78, 59, 0.2));
+  border-color: var(--emerald);
+}
+
+.participant-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.participant-turn-pill {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.payment-card.paid .participant-turn-pill {
+  background: var(--emerald);
+  color: #0b0f19;
+  border-color: var(--emerald);
+}
+
+.participant-name-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.participant-name {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.participant-sub {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+.payment-status-pill {
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 800;
+  background: var(--bg-elevated);
+  color: var(--text-dim);
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.payment-card.paid .payment-status-pill {
+  background: var(--emerald);
+  color: #0b0f19;
+  border-color: var(--emerald);
+  box-shadow: 0 2px 8px var(--emerald-glow);
+}
+
+/* ==========================================================
+   BOTÓN PARA COMPARTIR EN WHATSAPP
+   ========================================================== */
+.share-whatsapp-btn {
+  background: linear-gradient(135deg, #15803d, #047857);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  box-shadow: 0 6px 16px rgba(21, 128, 61, 0.35);
+  margin-top: 6px;
+}
+
+.share-whatsapp-btn:active {
+  transform: scale(0.97);
+}
+
+/* ==========================================================
+   PESTAÑA: TURNOS Y SORTEO AL AZAR
+   ========================================================== */
+.raffle-banner-card {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.1));
+  border: 2px dashed var(--gold);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.raffle-banner-title {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--gold-light);
+}
+
+.raffle-banner-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  max-width: 380px;
+  line-height: 1.4;
+}
+
+.btn-raffle-action {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #0b0f19;
+  border: none;
+  padding: 14px 24px;
+  border-radius: var(--radius-full);
+  font-size: 1rem;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px var(--gold-glow);
+  transition: transform 0.15s;
+}
+
+.btn-raffle-action:active {
+  transform: scale(0.95);
+}
+
+.turns-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.turn-item-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.turn-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.turn-badge {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  color: var(--gold-light);
+  font-weight: 900;
+  font-size: 0.85rem;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.turn-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.turn-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-icon-sub {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.btn-icon-sub:active {
+  transform: scale(0.9);
+  background: var(--border-color);
+}
+
+/* ==========================================================
+   PESTAÑA: CALENDARIO E HISTORIAL COMPLETO
+   ========================================================== */
+.timeline-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.timeline-group-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 4px;
+}
+
+.timeline-group-title.delivered { color: var(--emerald-light); }
+.timeline-group-title.current { color: var(--gold-light); }
+.timeline-group-title.waiting { color: var(--text-dim); }
+
+.timeline-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.timeline-card.delivered {
+  border-left: 4px solid var(--emerald);
+}
+
+.timeline-card.current {
+  border: 2px solid var(--gold);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(19, 28, 49, 0.9));
+}
+
+.timeline-card.waiting {
+  opacity: 0.85;
+}
+
+.timeline-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-round {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.timeline-beneficiary {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.timeline-status {
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: var(--radius-full);
+}
+
+.timeline-status.delivered {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--emerald-light);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.timeline-status.current {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--gold-light);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.timeline-status.waiting {
+  background: var(--bg-elevated);
+  color: var(--text-dim);
+}
+
+/* ==========================================================
+   PESTAÑA: AJUSTES Y CONFIGURACIÓN
+   ========================================================== */
+.settings-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.settings-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.settings-input {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 700;
+  outline: none;
+}
+
+.settings-input:focus {
+  border-color: var(--emerald);
+}
+
+.btn-primary-action {
+  background: var(--emerald);
+  color: #0b0f19;
+  border: none;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  font-weight: 800;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+/* Modal y Animación de Sorteo */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modal-backdrop.open {
+  display: flex;
+}
+
+.raffle-modal-box {
+  background: var(--bg-card);
+  border: 2px solid var(--gold);
+  border-radius: var(--radius-lg);
+  max-width: 440px;
+  width: 100%;
+  padding: 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 10px 30px var(--gold-glow);
+  animation: zoomIn 0.25s ease;
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.85); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.roulette-slot {
+  width: 100%;
+  height: 90px;
+  background: var(--bg-elevated);
+  border: 2px solid var(--gold-light);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--gold-light);
+  overflow: hidden;
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+}
+
+/* Toast flotante */
+.toast-msg {
+  position: fixed;
+  bottom: 85px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #10b981;
+  color: #0b0f19;
+  font-weight: 800;
+  font-size: 0.9rem;
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.25s ease;
+  z-index: 1200;
+  white-space: nowrap;
+}
+
+.toast-msg.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+</style>
+</head>
+<body>
+
+  <!-- Encabezado Fijo -->
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-icon">💰</span>
+      <span class="brand-title" id="brand-title">Círculo de Ahorro</span>
+    </div>
+    <span class="brand-badge">10 Personas</span>
+  </header>
+
+  <!-- Contenido Principal -->
+  <main class="main-container">
+
+    <!-- PESTAÑA 1: MES ACTUAL -->
+    <section id="pane-mes-actual" class="tab-pane active">
+      <!-- Selector de Mes / Ronda -->
+      <div class="round-nav-card">
+        <button type="button" class="round-nav-btn" id="btn-prev-round">◀ Mes Anterior</button>
+        <div class="round-nav-info">
+          <div class="round-nav-title" id="round-nav-title">Mes 1 de 10</div>
+          <div class="round-nav-sub" id="round-nav-sub">Cargando...</div>
+        </div>
+        <button type="button" class="round-nav-btn" id="btn-next-round">Siguiente Mes ▶</button>
+      </div>
+
+      <!-- Tarjeta Destacada: A quién le toca cobrar -->
+      <div class="beneficiary-hero-card">
+        <div class="hero-tag">
+          <span>🎯</span>
+          <span>A quién le toca cobrar este mes</span>
+        </div>
+        <div class="hero-beneficiary-row">
+          <div class="hero-name-wrap">
+            <div class="hero-avatar" id="hero-avatar">P</div>
+            <div>
+              <div class="hero-name" id="hero-beneficiary-name">-</div>
+              <div style="font-size: 0.78rem; color: var(--gold-light); font-weight: 700;">Beneficiario del Bote</div>
+            </div>
+          </div>
+          <div>
+            <div class="hero-pot-amount" id="hero-pot-amount">1.000 €</div>
+            <div class="hero-pot-label">Bote total a recibir</div>
+          </div>
+        </div>
+
+        <!-- Botón para marcar si ya se le entregó el dinero -->
+        <button type="button" id="btn-deliver-pot" class="btn-deliver-pot">
+          <span>💰 Marcar Bote como Entregado</span>
+        </button>
+      </div>
+
+      <!-- Tarjeta: Quién sigue en el próximo mes -->
+      <div id="next-in-line-container" class="next-in-line-card">
+        <div>
+          <div class="next-label">
+            <span>⏩</span>
+            <span>Siguiente en la lista</span>
+          </div>
+          <div class="next-name" id="next-beneficiary-name">-</div>
+        </div>
+        <div class="next-badge">Próximo Cobro</div>
+      </div>
+
+      <!-- Barra de progreso de recaudación -->
+      <div class="collection-progress-card">
+        <div class="progress-header">
+          <span class="progress-title">Recaudado hasta el momento:</span>
+          <div class="progress-numbers">
+            <strong id="progress-collected-amount">0 €</strong> de <span id="progress-total-pot">1.000 €</span>
+          </div>
+        </div>
+        <div class="progress-bar-container">
+          <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%;"></div>
+        </div>
+        <div class="progress-footer">
+          <span id="progress-footer-stats">0 de 10 personas han pagado (0%)</span>
+          <span style="color: var(--text-muted); font-size: 0.72rem;">Toque para marcar</span>
+        </div>
+      </div>
+
+      <!-- Lista de Pagos de las 10 Personas -->
+      <div class="payments-section">
+        <div class="payments-section-header">
+          <div class="section-title">
+            <span>👥</span>
+            <span>Lista de Pagos del Mes</span>
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <button type="button" class="quick-btn" id="btn-check-all-payments">✅ Todos</button>
+            <button type="button" class="quick-btn" id="btn-uncheck-all-payments">⚪ Ninguno</button>
+          </div>
+        </div>
+
+        <div id="payments-list-container" class="payments-list">
+          <!-- Renderizado dinámico -->
+        </div>
+
+        <!-- Botón Compartir en WhatsApp -->
+        <button type="button" id="btn-share-whatsapp" class="share-whatsapp-btn">
+          <span>📲</span>
+          <span>Compartir Informe del Mes en WhatsApp</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 2: TURNOS Y SORTEO -->
+    <section id="pane-turnos" class="tab-pane">
+      <!-- Banner Sorteo al Azar -->
+      <div class="raffle-banner-card">
+        <div class="raffle-banner-title">🎲 Sorteo de Turnos al Azar</div>
+        <div class="raffle-banner-desc">
+          Reparte los turnos del 1 al 10 de forma totalmente aleatoria, limpia y transparente entre los 10 participantes.
+        </div>
+        <button type="button" id="btn-start-raffle" class="btn-raffle-action">
+          <span>🎰</span>
+          <span>Sortear Turnos al Azar</span>
+        </button>
+      </div>
+
+      <div class="section-title" style="margin-top: 6px;">
+        <span>📋</span>
+        <span>Orden de Turnos (Mes 1 al 10)</span>
+      </div>
+      <p style="font-size: 0.78rem; color: var(--text-muted);">
+        💡 Puedes pulsar ✏️ para editar nombres, ⬆️/⬇️ para mover de puesto o 🔄 para intercambiar el turno con otra persona.
+      </p>
+
+      <div id="turns-list-container" class="turns-list">
+        <!-- Renderizado dinámico -->
+      </div>
+    </section>
+
+    <!-- PESTAÑA 3: CALENDARIO E HISTORIAL -->
+    <section id="pane-calendario" class="tab-pane">
+      <div class="section-title">
+        <span>📊</span>
+        <span>Estado Global del Ciclo</span>
+      </div>
+      <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 6px;">
+        Toca cualquier tarjeta para ver directamente los detalles y pagos de ese mes.
+      </p>
+
+      <!-- 1. Ya entregados -->
+      <div class="timeline-group">
+        <div class="timeline-group-title delivered">
+          <span>✅</span>
+          <span>A quién se le ha entregado ya el bote</span>
+        </div>
+        <div id="timeline-delivered-list" style="display: flex; flex-direction: column; gap: 8px;">
+          <!-- Dinámico -->
+        </div>
+      </div>
+
+      <!-- 2. En curso este mes -->
+      <div class="timeline-group" style="margin-top: 10px;">
+        <div class="timeline-group-title current">
+          <span>⏳</span>
+          <span>Cobrando actualmente (Mes en curso)</span>
+        </div>
+        <div id="timeline-current-list">
+          <!-- Dinámico -->
+        </div>
+      </div>
+
+      <!-- 3. Próximos turnos en espera -->
+      <div class="timeline-group" style="margin-top: 10px;">
+        <div class="timeline-group-title waiting">
+          <span>📅</span>
+          <span>En espera de cobrar (Próximos turnos)</span>
+        </div>
+        <div id="timeline-waiting-list" style="display: flex; flex-direction: column; gap: 8px;">
+          <!-- Dinámico -->
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 4: AJUSTES -->
+    <section id="pane-ajustes" class="tab-pane">
+      <div class="settings-card">
+        <div class="section-title">
+          <span>⚙️</span>
+          <span>Ajustes de la Tanda</span>
+        </div>
+
+        <form id="settings-form" style="display: flex; flex-direction: column; gap: 14px;">
+          <div class="settings-field">
+            <label class="settings-label" for="settings-group-name">Nombre del Grupo de Ahorro:</label>
+            <input type="text" id="settings-group-name" class="settings-input" required>
+          </div>
+
+          <div class="settings-field">
+            <label class="settings-label" for="settings-cuota">Cuota Mensual por Persona (€):</label>
+            <input type="number" id="settings-cuota" class="settings-input" min="1" step="1" required>
+            <span style="font-size: 0.75rem; color: var(--text-dim);">
+              Ejemplo: Con 100 €, el bote total cada mes será de 1.000 € (10 personas x 100 €).
+            </span>
+          </div>
+
+          <button type="submit" class="btn-primary-action">Guardar Ajustes</button>
+        </form>
+
+        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 10px 0;">
+
+        <div>
+          <div class="section-title" style="font-size: 0.95rem; color: var(--danger); margin-bottom: 6px;">
+            <span>🔄</span>
+            <span>Reiniciar Ciclo</span>
+          </div>
+          <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 10px;">
+            Borra los pagos y entregas para empezar una nueva tanda de 10 meses. Los nombres y turnos se conservan.
+          </p>
+          <button type="button" id="btn-reset-cycle" class="quick-btn" style="color: var(--danger); border-color: rgba(239, 68, 68, 0.4); padding: 10px 16px;">
+            Reiniciar Pagos y Entregas
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal de Animación de Sorteo -->
+  <div id="modal-raffle" class="modal-backdrop">
+    <div class="raffle-modal-box">
+      <div class="section-title" style="color: var(--gold-light);">
+        <span>🎰</span>
+        <span>Sorteando Turnos al Azar</span>
+      </div>
+      <div id="roulette-slot" class="roulette-slot">🎲 Mezclando...</div>
+      <p style="font-size: 0.8rem; color: var(--text-muted);">
+        Asignando un mes del 1 al 10 a cada participante de forma aleatoria...
+      </p>
+      <button type="button" id="btn-close-raffle-modal" class="btn-primary-action" style="width: 100%; display: none;">
+        Ver Resultados del Sorteo
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast Notificación -->
+  <div id="toast-msg" class="toast-msg">Mensaje copiado</div>
+
+  <!-- Barra de Navegación Inferior -->
+  <nav class="bottom-nav">
+    <button type="button" class="nav-tab active" data-tab="mes-actual">
+      <span class="tab-icon">📅</span>
+      <span class="tab-label">Mes Actual</span>
+    </button>
+    <button type="button" class="nav-tab" data-tab="turnos">
+      <span class="tab-icon">🎲</span>
+      <span class="tab-label">Turnos</span>
+    </button>
+    <button type="button" class="nav-tab" data-tab="calendario">
+      <span class="tab-icon">📋</span>
+      <span class="tab-label">Calendario</span>
+    </button>
+    <button type="button" class="nav-tab" data-tab="ajustes">
+      <span class="tab-icon">⚙️</span>
+      <span class="tab-label">Ajustes</span>
+    </button>
+  </nav>
+
+  <!-- Scripts -->
+  
+  <script>
+// Motor Lógico del Círculo de Ahorro / Tanda Mensual
+// 100% Gratuito, Sin Servidores de Pago, Almacenamiento Local Seguro
+
+const safeStorage = {
+  _mem: {},
+  getItem(key) {
+    try {
+      if (typeof window !== 'undefined' && 'localStorage' in window && window.localStorage) {
+        return window.localStorage.getItem(key);
+      }
+    } catch (e) {}
+    return this._mem[key] || null;
+  },
+  setItem(key, val) {
+    try {
+      if (typeof window !== 'undefined' && 'localStorage' in window && window.localStorage) {
+        window.localStorage.setItem(key, val);
+        return;
+      }
+    } catch (e) {}
+    this._mem[key] = String(val);
+  }
+};
+
+if (typeof window !== 'undefined') {
+  window.safeStorage = safeStorage;
+}
+
+class AhorroManager {
+  constructor() {
+    this.storageKey = 'circulo_ahorro_data_v1';
+
+    // Configuración por defecto
+    this.config = {
+      nombreGrupo: 'Mi Círculo de Ahorro',
+      cuota: 100, // 100 € por persona = 1.000 € de bote total
+      moneda: '€',
+      activeRound: 1 // Mes/Ronda activa actual (1..10)
+    };
+
+    // 10 Participantes iniciales por defecto (editables con lápiz)
+    this.participants = [
+      { id: 1, name: 'Participante 1', turn: 1 },
+      { id: 2, name: 'Participante 2', turn: 2 },
+      { id: 3, name: 'Participante 3', turn: 3 },
+      { id: 4, name: 'Participante 4', turn: 4 },
+      { id: 5, name: 'Participante 5', turn: 5 },
+      { id: 6, name: 'Participante 6', turn: 6 },
+      { id: 7, name: 'Participante 7', turn: 7 },
+      { id: 8, name: 'Participante 8', turn: 8 },
+      { id: 9, name: 'Participante 9', turn: 9 },
+      { id: 10, name: 'Participante 10', turn: 10 }
+    ];
+
+    // 10 Rondas (una por cada mes/turno)
+    this.rounds = {};
+    this.initDefaultRounds();
+
+    this.load();
+  }
+
+  initDefaultRounds() {
+    for (let r = 1; r <= 10; r++) {
+      if (!this.rounds[r]) {
+        this.rounds[r] = {
+          round: r,
+          payments: {}, // { [participantId]: boolean }
+          delivered: false, // si ya se le entregó el dinero al beneficiario
+          deliveredDate: null
+        };
+      }
+    }
+  }
+
+  save() {
+    try {
+      const data = {
+        config: this.config,
+        participants: this.participants,
+        rounds: this.rounds
+      };
+      safeStorage.setItem(this.storageKey, JSON.stringify(data));
+    } catch (e) {
+      console.warn('Error al guardar datos de ahorro', e);
+    }
+  }
+
+  load() {
+    try {
+      const saved = safeStorage.getItem(this.storageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.config) this.config = { ...this.config, ...parsed.config };
+        if (parsed.participants && Array.isArray(parsed.participants)) {
+          this.participants = parsed.participants;
+        }
+        if (parsed.rounds) {
+          this.rounds = parsed.rounds;
+        }
+      }
+    } catch (e) {
+      console.warn('Error al cargar datos guardados', e);
+    }
+  }
+
+  // --- GESTIÓN DE CONFIGURACIÓN Y PARTICIPANTES ---
+
+  setCuota(amount) {
+    const val = parseFloat(amount);
+    if (!isNaN(val) && val > 0) {
+      this.config.cuota = val;
+      this.save();
+      return true;
+    }
+    return false;
+  }
+
+  setNombreGrupo(name) {
+    if (name && name.trim()) {
+      this.config.nombreGrupo = name.trim();
+      this.save();
+    }
+  }
+
+  setActiveRound(roundNum) {
+    const r = parseInt(roundNum, 10);
+    if (r >= 1 && r <= this.participants.length) {
+      this.config.activeRound = r;
+      this.save();
+    }
+  }
+
+  editParticipant(id, newName) {
+    const trimmed = newName ? newName.trim() : '';
+    if (!trimmed) return false;
+    const p = this.participants.find(x => x.id === id);
+    if (p) {
+      p.name = trimmed;
+      this.save();
+      return true;
+    }
+    return false;
+  }
+
+  // Obtener participante asignado a un turno
+  getParticipantByTurn(turnNumber) {
+    return this.participants.find(p => p.turn === turnNumber) || null;
+  }
+
+  // Obtener lista ordenada por turnos (1..10)
+  getParticipantsSortedByTurn() {
+    return [...this.participants].sort((a, b) => a.turn - b.turn);
+  }
+
+  // --- ASIGNACIÓN DE TURNOS: MANUAL Y AL AZAR ---
+
+  // Sorteo al azar (Algoritmo Fisher-Yates para sorteo justo y transparente)
+  randomizeTurns() {
+    const total = this.participants.length;
+    // Generar array de turnos [1, 2, ..., total]
+    const turns = Array.from({ length: total }, (_, i) => i + 1);
+
+    // Barajar turnos
+    for (let i = turns.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [turns[i], turns[j]] = [turns[j], turns[i]];
+    }
+
+    // Asignar los turnos mezclados
+    this.participants.forEach((p, idx) => {
+      p.turn = turns[idx];
+    });
+
+    this.save();
+    return this.getParticipantsSortedByTurn();
+  }
+
+  // Intercambiar turno entre dos participantes
+  swapTurns(participantIdA, participantIdB) {
+    const pA = this.participants.find(p => p.id === participantIdA);
+    const pB = this.participants.find(p => p.id === participantIdB);
+    if (pA && pB) {
+      const temp = pA.turn;
+      pA.turn = pB.turn;
+      pB.turn = temp;
+      this.save();
+      return true;
+    }
+    return false;
+  }
+
+  // Subir o bajar turno
+  shiftTurn(participantId, direction) { // direction: -1 (subir) o +1 (bajar)
+    const p = this.participants.find(x => x.id === participantId);
+    if (!p) return false;
+
+    const targetTurn = p.turn + direction;
+    if (targetTurn < 1 || targetTurn > this.participants.length) return false;
+
+    const other = this.participants.find(x => x.turn === targetTurn);
+    if (other) {
+      other.turn = p.turn;
+      p.turn = targetTurn;
+      this.save();
+      return true;
+    }
+    return false;
+  }
+
+  // --- CONTROL DE PAGOS Y ENTREGA DEL BOTE ---
+
+  isPaymentMade(roundNum, participantId) {
+    const r = this.rounds[roundNum];
+    if (!r || !r.payments) return false;
+    return !!r.payments[participantId];
+  }
+
+  togglePayment(roundNum, participantId) {
+    if (!this.rounds[roundNum]) {
+      this.initDefaultRounds();
+    }
+    const r = this.rounds[roundNum];
+    r.payments[participantId] = !r.payments[participantId];
+    this.save();
+    return r.payments[participantId];
+  }
+
+  markAllPayments(roundNum, paid = true) {
+    if (!this.rounds[roundNum]) {
+      this.initDefaultRounds();
+    }
+    const r = this.rounds[roundNum];
+    this.participants.forEach(p => {
+      r.payments[p.id] = paid;
+    });
+    this.save();
+  }
+
+  toggleDelivered(roundNum) {
+    if (!this.rounds[roundNum]) {
+      this.initDefaultRounds();
+    }
+    const r = this.rounds[roundNum];
+    r.delivered = !r.delivered;
+    if (r.delivered) {
+      const now = new Date();
+      r.deliveredDate = now.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+    } else {
+      r.deliveredDate = null;
+    }
+    this.save();
+    return r.delivered;
+  }
+
+  // --- CONSULTAS Y ESTADÍSTICAS DEL MES / RONDA ---
+
+  getRoundDetails(roundNum) {
+    const rNum = parseInt(roundNum, 10);
+    const roundData = this.rounds[rNum] || { round: rNum, payments: {}, delivered: false, deliveredDate: null };
+    const beneficiary = this.getParticipantByTurn(rNum);
+    const nextBeneficiary = this.getParticipantByTurn(rNum + 1);
+
+    const totalParticipants = this.participants.length;
+    const cuota = this.config.cuota;
+    const totalPot = cuota * totalParticipants;
+
+    let paidCount = 0;
+    const paidList = [];
+    const pendingList = [];
+
+    this.participants.forEach(p => {
+      const isPaid = !!roundData.payments[p.id];
+      if (isPaid) {
+        paidCount++;
+        paidList.push(p);
+      } else {
+        pendingList.push(p);
+      }
+    });
+
+    const collectedAmount = paidCount * cuota;
+    const percentage = totalParticipants > 0 ? Math.round((paidCount / totalParticipants) * 100) : 0;
+    const isCompleted = paidCount === totalParticipants && roundData.delivered;
+
+    return {
+      round: rNum,
+      beneficiary: beneficiary ? beneficiary : { id: 0, name: `Turno ${rNum}`, turn: rNum },
+      nextBeneficiary: nextBeneficiary || null,
+      cuota,
+      totalPot,
+      collectedAmount,
+      paidCount,
+      totalParticipants,
+      percentage,
+      delivered: !!roundData.delivered,
+      deliveredDate: roundData.deliveredDate,
+      paidList,
+      pendingList,
+      isCompleted
+    };
+  }
+
+  // Resumen global de todo el ciclo de 10 meses
+  getGlobalOverview() {
+    const list = [];
+    const total = this.participants.length;
+
+    for (let r = 1; r <= total; r++) {
+      const details = this.getRoundDetails(r);
+      list.push(details);
+    }
+
+    const alreadyGiven = list.filter(item => item.delivered);
+    const currentRound = this.config.activeRound;
+    const upcomingWaiting = list.filter(item => item.round > currentRound && !item.delivered);
+
+    return {
+      allRounds: list,
+      alreadyGiven,
+      currentRound,
+      upcomingWaiting,
+      totalRounds: total,
+      completedRoundsCount: alreadyGiven.length
+    };
+  }
+
+  // --- GENERADOR DE INFORME PARA WHATSAPP (1 TOQUE) ---
+
+  getWhatsAppMessage(roundNum) {
+    const details = this.getRoundDetails(roundNum);
+    const overview = this.getGlobalOverview();
+    const moneda = this.config.moneda;
+
+    let msg = `💰 *${this.config.nombreGrupo.toUpperCase()} - MES ${details.round}*\n\n`;
+
+    // 1. Quién cobra este mes
+    msg += `🎯 *LE TOCA COBRAR:* ${details.beneficiary.name}\n`;
+    msg += `💵 *Bote Total:* ${details.totalPot.toLocaleString('es-ES')} ${moneda} (${details.totalParticipants} x ${details.cuota} ${moneda})\n`;
+    msg += `📦 *Estado de entrega:* ${details.delivered ? `✅ BOTE ENTREGADO (${details.deliveredDate})` : '⏳ Pendiente de entregar'}\n\n`;
+
+    // 2. Progreso de cobro
+    msg += `📊 *RECAUDACIÓN:* ${details.collectedAmount.toLocaleString('es-ES')} ${moneda} de ${details.totalPot.toLocaleString('es-ES')} ${moneda} (${details.paidCount}/${details.totalParticipants})\n\n`;
+
+    // 3. Quiénes ya pagaron
+    msg += `✅ *Ya pagaron (${details.paidList.length}):*\n`;
+    if (details.paidList.length === 0) {
+      msg += `  _(Ninguno todavía)_\n`;
+    } else {
+      details.paidList.forEach(p => {
+        msg += `  • ${p.name}\n`;
+      });
+    }
+
+    // 4. Quiénes faltan por pagar
+    msg += `\n⏳ *Faltan por pagar (${details.pendingList.length}):*\n`;
+    if (details.pendingList.length === 0) {
+      msg += `  🎉 _¡Todos han pagado su cuota!_\n`;
+    } else {
+      details.pendingList.forEach(p => {
+        msg += `  • ${p.name} (debe ${details.cuota} ${moneda})\n`;
+      });
+    }
+
+    // 5. Quién sigue el mes siguiente
+    if (details.nextBeneficiary) {
+      msg += `\n⏩ *SIGUIENTE EN COBRAR (Mes ${details.round + 1}):* ${details.nextBeneficiary.name}\n`;
+    }
+
+    // 6. Resumen de quiénes ya han cobrado en rondas anteriores
+    const pastDelivered = overview.alreadyGiven.filter(item => item.round !== details.round);
+    if (pastDelivered.length > 0) {
+      msg += `\n🏆 *Ya recibieron su bote anteriormente:*\n`;
+      pastDelivered.forEach(item => {
+        msg += `  ✔ Mes ${item.round}: ${item.beneficiary.name}\n`;
+      });
+    }
+
+    return msg;
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.ahorroManager = new AhorroManager();
+}
+
+// Controlador Principal de la App: Círculo de Ahorro y Tanda Mensual
+
+class SoundFX {
+  constructor() {
+    this.ctx = null;
+  }
+  init() {
+    if (!this.ctx) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (AudioContext) this.ctx = new AudioContext();
+    }
+    if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+  }
+  playBeep(freq = 600, duration = 0.08, type = 'sine') {
+    try {
+      this.init();
+      if (!this.ctx) return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+      gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + duration);
+    } catch (e) {}
+  }
+  clickPay() {
+    this.playBeep(650, 0.08, 'triangle');
+    if (navigator.vibrate) navigator.vibrate(25);
+  }
+  clickUnpay() {
+    this.playBeep(380, 0.08, 'sine');
+    if (navigator.vibrate) navigator.vibrate(15);
+  }
+  clickDeliver() {
+    // Sonido festivo de entrega
+    this.playBeep(523.25, 0.1);
+    setTimeout(() => this.playBeep(659.25, 0.1), 100);
+    setTimeout(() => this.playBeep(783.99, 0.2), 200);
+    if (navigator.vibrate) navigator.vibrate([40, 60, 80]);
+  }
+  tickRaffle() {
+    this.playBeep(880, 0.04, 'square');
+  }
+}
+
+const sounds = new SoundFX();
+
+// Estado de la interfaz
+let currentTab = 'mes-actual';
+
+document.addEventListener('DOMContentLoaded', () => {
+  initTabs();
+  initRoundControls();
+  initRaffleControls();
+  initSettingsControls();
+  initPWA();
+
+  // Render inicial
+  renderCurrentRound();
+  renderTurnsList();
+  renderTimeline();
+  renderSettings();
+});
+
+// --- PESTAÑAS DE NAVEGACIÓN ---
+function initTabs() {
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const tabId = tab.getAttribute('data-tab');
+      switchTab(tabId);
+    });
+  });
+}
+
+function switchTab(tabId) {
+  currentTab = tabId;
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    t.classList.toggle('active', t.getAttribute('data-tab') === tabId);
+  });
+  document.querySelectorAll('.tab-pane').forEach(p => {
+    p.classList.toggle('active', p.id === `pane-${tabId}`);
+  });
+
+  const titles = {
+    'mes-actual': window.ahorroManager.config.nombreGrupo || 'Círculo de Ahorro',
+    'turnos': 'Turnos y Sorteo',
+    'calendario': 'Calendario e Historial',
+    'ajustes': 'Ajustes de la Tanda'
+  };
+  document.getElementById('brand-title').textContent = titles[tabId] || 'Círculo de Ahorro';
+
+  if (tabId === 'mes-actual') renderCurrentRound();
+  if (tabId === 'turnos') renderTurnsList();
+  if (tabId === 'calendario') renderTimeline();
+  if (tabId === 'ajustes') renderSettings();
+}
+
+// --- CONTROLES DE NAVEGACIÓN DE MES / RONDA ---
+function initRoundControls() {
+  const manager = window.ahorroManager;
+
+  document.getElementById('btn-prev-round').addEventListener('click', () => {
+    let r = manager.config.activeRound - 1;
+    if (r < 1) r = manager.participants.length;
+    manager.setActiveRound(r);
+    renderCurrentRound();
+  });
+
+  document.getElementById('btn-next-round').addEventListener('click', () => {
+    let r = manager.config.activeRound + 1;
+    if (r > manager.participants.length) r = 1;
+    manager.setActiveRound(r);
+    renderCurrentRound();
+  });
+
+  // Botón entregar bote
+  document.getElementById('btn-deliver-pot').addEventListener('click', () => {
+    const r = manager.config.activeRound;
+    const isDelivered = manager.toggleDelivered(r);
+    if (isDelivered) {
+      sounds.clickDeliver();
+      showToast('🎉 ¡Bote marcado como ENTREGADO con éxito!');
+    } else {
+      sounds.clickUnpay();
+      showToast('Bote marcado como pendiente de entrega.');
+    }
+    renderCurrentRound();
+    renderTimeline();
+  });
+
+  // Marcar todos / desmarcar todos
+  document.getElementById('btn-check-all-payments').addEventListener('click', () => {
+    const r = manager.config.activeRound;
+    manager.markAllPayments(r, true);
+    sounds.clickPay();
+    renderCurrentRound();
+    showToast('Todos los participantes marcados como pagados.');
+  });
+
+  document.getElementById('btn-uncheck-all-payments').addEventListener('click', () => {
+    const r = manager.config.activeRound;
+    manager.markAllPayments(r, false);
+    sounds.clickUnpay();
+    renderCurrentRound();
+    showToast('Pagos desmarcados.');
+  });
+
+  // Botón Compartir en WhatsApp
+  document.getElementById('btn-share-whatsapp').addEventListener('click', () => {
+    const r = manager.config.activeRound;
+    const text = manager.getWhatsAppMessage(r);
+
+    if (navigator.share) {
+      navigator.share({
+        title: `${manager.config.nombreGrupo} - Mes ${r}`,
+        text: text
+      }).catch(() => copyToClipboard(text));
+    } else {
+      copyToClipboard(text);
+    }
+  });
+}
+
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('¡Mensaje copiado! Ya puedes pegarlo en WhatsApp 📲');
+  }).catch(() => {
+    prompt('Copia este informe para enviarlo a WhatsApp:', text);
+  });
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast-msg');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2800);
+}
+
+// --- RENDERIZADO: PESTAÑA MES ACTUAL ---
+function renderCurrentRound() {
+  const manager = window.ahorroManager;
+  const currentRound = manager.config.activeRound;
+  const details = manager.getRoundDetails(currentRound);
+  const moneda = manager.config.moneda;
+
+  // Cabecera del mes
+  document.getElementById('round-nav-title').textContent = `Mes ${details.round} de ${details.totalParticipants}`;
+  document.getElementById('round-nav-sub').textContent = details.delivered
+    ? `✅ Bote entregado a ${details.beneficiary.name}`
+    : `En curso: le toca a ${details.beneficiary.name}`;
+
+  // Tarjeta Héroe: A quién le toca cobrar
+  document.getElementById('hero-beneficiary-name').textContent = details.beneficiary.name;
+  document.getElementById('hero-avatar').textContent = details.beneficiary.name.charAt(0).toUpperCase();
+  document.getElementById('hero-pot-amount').textContent = `${details.totalPot.toLocaleString('es-ES')} ${moneda}`;
+
+  // Botón estado de entrega
+  const btnDeliver = document.getElementById('btn-deliver-pot');
+  if (details.delivered) {
+    btnDeliver.classList.add('delivered');
+    btnDeliver.innerHTML = `<span>✅ Bote Entregado el ${details.deliveredDate || 'hoy'}</span>`;
+  } else {
+    btnDeliver.classList.remove('delivered');
+    btnDeliver.innerHTML = `<span>💰 Marcar Bote como Entregado a ${details.beneficiary.name}</span>`;
+  }
+
+  // Tarjeta: Quién sigue
+  const nextCard = document.getElementById('next-in-line-container');
+  if (details.nextBeneficiary) {
+    nextCard.style.display = 'flex';
+    document.getElementById('next-beneficiary-name').textContent = `${details.nextBeneficiary.name} (Mes ${details.round + 1})`;
+  } else {
+    nextCard.style.display = 'flex';
+    document.getElementById('next-beneficiary-name').textContent = '🎉 ¡Este es el último mes del ciclo!';
+  }
+
+  // Barra de progreso de recaudación
+  document.getElementById('progress-collected-amount').textContent = `${details.collectedAmount.toLocaleString('es-ES')} ${moneda}`;
+  document.getElementById('progress-total-pot').textContent = `${details.totalPot.toLocaleString('es-ES')} ${moneda}`;
+  document.getElementById('progress-bar-fill').style.width = `${details.percentage}%`;
+  document.getElementById('progress-footer-stats').textContent = `${details.paidCount} de ${details.totalParticipants} personas han pagado (${details.percentage}%)`;
+
+  // Renderizar lista de pagos de las 10 personas
+  const paymentsContainer = document.getElementById('payments-list-container');
+  paymentsContainer.innerHTML = '';
+
+  const sortedParticipants = manager.getParticipantsSortedByTurn();
+
+  sortedParticipants.forEach(p => {
+    const isPaid = manager.isPaymentMade(currentRound, p.id);
+    const isBeneficiary = p.turn === currentRound;
+
+    const card = document.createElement('div');
+    card.className = `payment-card ${isPaid ? 'paid' : ''}`;
+    card.innerHTML = `
+      <div class="participant-info">
+        <div class="participant-turn-pill">${p.turn}º</div>
+        <div class="participant-name-wrap">
+          <span class="participant-name">${p.name} ${isBeneficiary ? '🎯 (Cobra este mes)' : ''}</span>
+          <span class="participant-sub">Cuota: ${details.cuota} ${moneda}</span>
+        </div>
+      </div>
+      <div class="payment-status-pill">
+        ${isPaid ? 'Pagado ✅' : 'Pendiente ⚪'}
+      </div>
+    `;
+
+    card.addEventListener('click', () => {
+      const nowPaid = manager.togglePayment(currentRound, p.id);
+      if (nowPaid) sounds.clickPay();
+      else sounds.clickUnpay();
+      renderCurrentRound();
+    });
+
+    paymentsContainer.appendChild(card);
+  });
+}
+
+// --- RENDERIZADO Y CONTROL: PESTAÑA TURNOS Y SORTEO ---
+function initRaffleControls() {
+  const manager = window.ahorroManager;
+
+  document.getElementById('btn-start-raffle').addEventListener('click', () => {
+    if (confirm('¿Quieres sortear los turnos del 1 al 10 al azar entre los participantes?')) {
+      runRaffleAnimation();
+    }
+  });
+
+  // Modal cerrar
+  document.getElementById('btn-close-raffle-modal').addEventListener('click', () => {
+    document.getElementById('modal-raffle').classList.remove('open');
+  });
+}
+
+function runRaffleAnimation() {
+  const manager = window.ahorroManager;
+  const modal = document.getElementById('modal-raffle');
+  const slot = document.getElementById('roulette-slot');
+  const names = manager.participants.map(p => p.name);
+
+  modal.classList.add('open');
+  document.getElementById('btn-close-raffle-modal').style.display = 'none';
+
+  let counter = 0;
+  const totalTicks = 24;
+  let speed = 60;
+
+  function tick() {
+    counter++;
+    const randomName = names[Math.floor(Math.random() * names.length)];
+    slot.textContent = `🎲 ${randomName}`;
+    sounds.tickRaffle();
+
+    if (counter < totalTicks) {
+      speed += 10;
+      setTimeout(tick, speed);
+    } else {
+      // Sorteo finalizado
+      manager.randomizeTurns();
+      sounds.clickDeliver();
+      slot.textContent = '🎉 ¡Turnos Sorteados!';
+      document.getElementById('btn-close-raffle-modal').style.display = 'block';
+      renderTurnsList();
+      renderCurrentRound();
+      renderTimeline();
+      showToast('¡Sorteo completado con éxito!');
+    }
+  }
+
+  tick();
+}
+
+function renderTurnsList() {
+  const manager = window.ahorroManager;
+  const listContainer = document.getElementById('turns-list-container');
+  listContainer.innerHTML = '';
+
+  const sorted = manager.getParticipantsSortedByTurn();
+
+  sorted.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'turn-item-card';
+    card.innerHTML = `
+      <div class="turn-left">
+        <div class="turn-badge">${p.turn}º</div>
+        <span class="turn-name">${p.name}</span>
+      </div>
+      <div class="turn-actions">
+        <button type="button" class="btn-icon-sub edit" title="Editar nombre">✏️</button>
+        <button type="button" class="btn-icon-sub up" title="Subir de puesto">⬆️</button>
+        <button type="button" class="btn-icon-sub down" title="Bajar de puesto">⬇️</button>
+        <button type="button" class="btn-icon-sub swap" title="Intercambiar turno">🔄</button>
+      </div>
+    `;
+
+    // Editar nombre
+    card.querySelector('.edit').addEventListener('click', () => {
+      const nuevo = prompt(`Editar nombre de "${p.name}":`, p.name);
+      if (nuevo && nuevo.trim() && nuevo.trim() !== p.name) {
+        manager.editParticipant(p.id, nuevo);
+        renderTurnsList();
+        renderCurrentRound();
+        renderTimeline();
+        showToast('Nombre actualizado.');
+      }
+    });
+
+    // Subir puesto (direction -1)
+    card.querySelector('.up').addEventListener('click', () => {
+      if (manager.shiftTurn(p.id, -1)) {
+        renderTurnsList();
+        renderCurrentRound();
+        renderTimeline();
+      }
+    });
+
+    // Bajar puesto (direction +1)
+    card.querySelector('.down').addEventListener('click', () => {
+      if (manager.shiftTurn(p.id, 1)) {
+        renderTurnsList();
+        renderCurrentRound();
+        renderTimeline();
+      }
+    });
+
+    // Intercambiar puesto con otro participante
+    card.querySelector('.swap').addEventListener('click', () => {
+      const otherNames = manager.participants.filter(x => x.id !== p.id);
+      let promptText = `¿Con quién quieres intercambiar el turno ${p.turn} de "${p.name}"?\nEscribe el número de turno (1 a 10):`;
+      const targetTurnStr = prompt(promptText);
+      const targetTurn = parseInt(targetTurnStr, 10);
+      if (targetTurn >= 1 && targetTurn <= manager.participants.length && targetTurn !== p.turn) {
+        const targetP = manager.getParticipantByTurn(targetTurn);
+        if (targetP) {
+          manager.swapTurns(p.id, targetP.id);
+          renderTurnsList();
+          renderCurrentRound();
+          renderTimeline();
+          showToast(`¡Turno intercambiado con ${targetP.name}!`);
+        }
+      }
+    });
+
+    listContainer.appendChild(card);
+  });
+}
+
+// --- RENDERIZADO: PESTAÑA CALENDARIO E HISTORIAL ---
+function renderTimeline() {
+  const manager = window.ahorroManager;
+  const overview = manager.getGlobalOverview();
+  const currentRound = manager.config.activeRound;
+  const moneda = manager.config.moneda;
+
+  // 1. Grupo: Ya entregados
+  const deliveredContainer = document.getElementById('timeline-delivered-list');
+  deliveredContainer.innerHTML = '';
+  if (overview.alreadyGiven.length === 0) {
+    deliveredContainer.innerHTML = '<div style="color: var(--text-dim); font-size: 0.8rem; padding: 6px;">Aún no se ha completado ninguna entrega.</div>';
+  } else {
+    overview.alreadyGiven.forEach(item => {
+      const card = createTimelineCard(item, 'delivered', moneda);
+      deliveredContainer.appendChild(card);
+    });
+  }
+
+  // 2. Grupo: En curso este mes
+  const currentContainer = document.getElementById('timeline-current-list');
+  currentContainer.innerHTML = '';
+  const currentDetails = manager.getRoundDetails(currentRound);
+  const currentCard = createTimelineCard(currentDetails, 'current', moneda);
+  currentContainer.appendChild(currentCard);
+
+  // 3. Grupo: Próximos turnos en espera
+  const waitingContainer = document.getElementById('timeline-waiting-list');
+  waitingContainer.innerHTML = '';
+  const waitingRounds = overview.allRounds.filter(item => item.round !== currentRound && !item.delivered);
+  if (waitingRounds.length === 0) {
+    waitingContainer.innerHTML = '<div style="color: var(--text-dim); font-size: 0.8rem; padding: 6px;">¡Todos los participantes han cobrado!</div>';
+  } else {
+    waitingRounds.forEach(item => {
+      const card = createTimelineCard(item, 'waiting', moneda);
+      waitingContainer.appendChild(card);
+    });
+  }
+}
+
+function createTimelineCard(item, statusType, moneda) {
+  const card = document.createElement('div');
+  card.className = `timeline-card ${statusType}`;
+  card.style.cursor = 'pointer';
+
+  let statusBadgeText = 'En espera ⏳';
+  if (statusType === 'delivered') statusBadgeText = `Entregado ✅ (${item.deliveredDate || 'Listo'})`;
+  if (statusType === 'current') statusBadgeText = item.delivered ? 'Bote Entregado ✅' : 'Cobrando este mes 🎯';
+
+  card.innerHTML = `
+    <div class="timeline-info">
+      <span class="timeline-round">Mes ${item.round}</span>
+      <span class="timeline-beneficiary">${item.beneficiary.name}</span>
+      <span style="font-size: 0.72rem; color: var(--text-dim);">Bote: ${item.totalPot.toLocaleString('es-ES')} ${moneda}</span>
+    </div>
+    <div class="timeline-status ${statusType}">
+      ${statusBadgeText}
+    </div>
+  `;
+
+  // Al tocar la tarjeta, ir a ver ese mes
+  card.addEventListener('click', () => {
+    window.ahorroManager.setActiveRound(item.round);
+    switchTab('mes-actual');
+  });
+
+  return card;
+}
+
+// --- RENDERIZADO Y CONTROL: PESTAÑA AJUSTES ---
+function initSettingsControls() {
+  const manager = window.ahorroManager;
+
+  document.getElementById('settings-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const groupName = document.getElementById('settings-group-name').value.trim();
+    const cuotaVal = parseFloat(document.getElementById('settings-cuota').value);
+
+    if (groupName) manager.setNombreGrupo(groupName);
+    if (!isNaN(cuotaVal) && cuotaVal > 0) manager.setCuota(cuotaVal);
+
+    showToast('Ajustes guardados correctamente.');
+    renderCurrentRound();
+    renderTimeline();
+    switchTab('mes-actual');
+  });
+
+  // Reiniciar ciclo
+  document.getElementById('btn-reset-cycle').addEventListener('click', () => {
+    if (confirm('¿Estás seguro de reiniciar todos los pagos y entregas para empezar un ciclo nuevo? Los nombres y turnos se mantendrán.')) {
+      manager.initDefaultRounds();
+      manager.setActiveRound(1);
+      manager.save();
+      showToast('¡Ciclo reiniciado para una nueva tanda!');
+      renderCurrentRound();
+      renderTimeline();
+      switchTab('mes-actual');
+    }
+  });
+}
+
+function renderSettings() {
+  const manager = window.ahorroManager;
+  document.getElementById('settings-group-name').value = manager.config.nombreGrupo || '';
+  document.getElementById('settings-cuota').value = manager.config.cuota || 100;
+}
+
+// --- PWA SERVICE WORKER ---
+function initPWA() {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('SW de Ahorro registrado', reg.scope))
+        .catch(err => console.warn('SW no disponible en local', err));
+    });
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0f1d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Ahorro">
+  <meta name="description" content="Gestión mensual de grupo de ahorro, tanda y turnos de cobro">
+  
+  <title>Círculo de Ahorro y Tanda Mensual</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Encabezado Fijo -->
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-icon">💰</span>
+      <span class="brand-title" id="brand-title">Círculo de Ahorro</span>
+    </div>
+    <span class="brand-badge">10 Personas</span>
+  </header>
+
+  <!-- Contenido Principal -->
+  <main class="main-container">
+
+    <!-- PESTAÑA 1: MES ACTUAL -->
+    <section id="pane-mes-actual" class="tab-pane active">
+      <!-- Selector de Mes / Ronda -->
+      <div class="round-nav-card">
+        <button type="button" class="round-nav-btn" id="btn-prev-round">◀ Mes Anterior</button>
+        <div class="round-nav-info">
+          <div class="round-nav-title" id="round-nav-title">Mes 1 de 10</div>
+          <div class="round-nav-sub" id="round-nav-sub">Cargando...</div>
+        </div>
+        <button type="button" class="round-nav-btn" id="btn-next-round">Siguiente Mes ▶</button>
+      </div>
+
+      <!-- Tarjeta Destacada: A quién le toca cobrar -->
+      <div class="beneficiary-hero-card">
+        <div class="hero-tag">
+          <span>🎯</span>
+          <span>A quién le toca cobrar este mes</span>
+        </div>
+        <div class="hero-beneficiary-row">
+          <div class="hero-name-wrap">
+            <div class="hero-avatar" id="hero-avatar">P</div>
+            <div>
+              <div class="hero-name" id="hero-beneficiary-name">-</div>
+              <div style="font-size: 0.78rem; color: var(--gold-light); font-weight: 700;">Beneficiario del Bote</div>
+            </div>
+          </div>
+          <div>
+            <div class="hero-pot-amount" id="hero-pot-amount">1.000 €</div>
+            <div class="hero-pot-label">Bote total a recibir</div>
+          </div>
+        </div>
+
+        <!-- Botón para marcar si ya se le entregó el dinero -->
+        <button type="button" id="btn-deliver-pot" class="btn-deliver-pot">
+          <span>💰 Marcar Bote como Entregado</span>
+        </button>
+      </div>
+
+      <!-- Tarjeta: Quién sigue en el próximo mes -->
+      <div id="next-in-line-container" class="next-in-line-card">
+        <div>
+          <div class="next-label">
+            <span>⏩</span>
+            <span>Siguiente en la lista</span>
+          </div>
+          <div class="next-name" id="next-beneficiary-name">-</div>
+        </div>
+        <div class="next-badge">Próximo Cobro</div>
+      </div>
+
+      <!-- Barra de progreso de recaudación -->
+      <div class="collection-progress-card">
+        <div class="progress-header">
+          <span class="progress-title">Recaudado hasta el momento:</span>
+          <div class="progress-numbers">
+            <strong id="progress-collected-amount">0 €</strong> de <span id="progress-total-pot">1.000 €</span>
+          </div>
+        </div>
+        <div class="progress-bar-container">
+          <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%;"></div>
+        </div>
+        <div class="progress-footer">
+          <span id="progress-footer-stats">0 de 10 personas han pagado (0%)</span>
+          <span style="color: var(--text-muted); font-size: 0.72rem;">Toque para marcar</span>
+        </div>
+      </div>
+
+      <!-- Lista de Pagos de las 10 Personas -->
+      <div class="payments-section">
+        <div class="payments-section-header">
+          <div class="section-title">
+            <span>👥</span>
+            <span>Lista de Pagos del Mes</span>
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <button type="button" class="quick-btn" id="btn-check-all-payments">✅ Todos</button>
+            <button type="button" class="quick-btn" id="btn-uncheck-all-payments">⚪ Ninguno</button>
+          </div>
+        </div>
+
+        <div id="payments-list-container" class="payments-list">
+          <!-- Renderizado dinámico -->
+        </div>
+
+        <!-- Botón Compartir en WhatsApp -->
+        <button type="button" id="btn-share-whatsapp" class="share-whatsapp-btn">
+          <span>📲</span>
+          <span>Compartir Informe del Mes en WhatsApp</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 2: TURNOS Y SORTEO -->
+    <section id="pane-turnos" class="tab-pane">
+      <!-- Banner Sorteo al Azar -->
+      <div class="raffle-banner-card">
+        <div class="raffle-banner-title">🎲 Sorteo de Turnos al Azar</div>
+        <div class="raffle-banner-desc">
+          Reparte los turnos del 1 al 10 de forma totalmente aleatoria, limpia y transparente entre los 10 participantes.
+        </div>
+        <button type="button" id="btn-start-raffle" class="btn-raffle-action">
+          <span>🎰</span>
+          <span>Sortear Turnos al Azar</span>
+        </button>
+      </div>
+
+      <div class="section-title" style="margin-top: 6px;">
+        <span>📋</span>
+        <span>Orden de Turnos (Mes 1 al 10)</span>
+      </div>
+      <p style="font-size: 0.78rem; color: var(--text-muted);">
+        💡 Puedes pulsar ✏️ para editar nombres, ⬆️/⬇️ para mover de puesto o 🔄 para intercambiar el turno con otra persona.
+      </p>
+
+      <div id="turns-list-container" class="turns-list">
+        <!-- Renderizado dinámico -->
+      </div>
+    </section>
+
+    <!-- PESTAÑA 3: CALENDARIO E HISTORIAL -->
+    <section id="pane-calendario" class="tab-pane">
+      <div class="section-title">
+        <span>📊</span>
+        <span>Estado Global del Ciclo</span>
+      </div>
+      <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 6px;">
+        Toca cualquier tarjeta para ver directamente los detalles y pagos de ese mes.
+      </p>
+
+      <!-- 1. Ya entregados -->
+      <div class="timeline-group">
+        <div class="timeline-group-title delivered">
+          <span>✅</span>
+          <span>A quién se le ha entregado ya el bote</span>
+        </div>
+        <div id="timeline-delivered-list" style="display: flex; flex-direction: column; gap: 8px;">
+          <!-- Dinámico -->
+        </div>
+      </div>
+
+      <!-- 2. En curso este mes -->
+      <div class="timeline-group" style="margin-top: 10px;">
+        <div class="timeline-group-title current">
+          <span>⏳</span>
+          <span>Cobrando actualmente (Mes en curso)</span>
+        </div>
+        <div id="timeline-current-list">
+          <!-- Dinámico -->
+        </div>
+      </div>
+
+      <!-- 3. Próximos turnos en espera -->
+      <div class="timeline-group" style="margin-top: 10px;">
+        <div class="timeline-group-title waiting">
+          <span>📅</span>
+          <span>En espera de cobrar (Próximos turnos)</span>
+        </div>
+        <div id="timeline-waiting-list" style="display: flex; flex-direction: column; gap: 8px;">
+          <!-- Dinámico -->
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 4: AJUSTES -->
+    <section id="pane-ajustes" class="tab-pane">
+      <div class="settings-card">
+        <div class="section-title">
+          <span>⚙️</span>
+          <span>Ajustes de la Tanda</span>
+        </div>
+
+        <form id="settings-form" style="display: flex; flex-direction: column; gap: 14px;">
+          <div class="settings-field">
+            <label class="settings-label" for="settings-group-name">Nombre del Grupo de Ahorro:</label>
+            <input type="text" id="settings-group-name" class="settings-input" required>
+          </div>
+
+          <div class="settings-field">
+            <label class="settings-label" for="settings-cuota">Cuota Mensual por Persona (€):</label>
+            <input type="number" id="settings-cuota" class="settings-input" min="1" step="1" required>
+            <span style="font-size: 0.75rem; color: var(--text-dim);">
+              Ejemplo: Con 100 €, el bote total cada mes será de 1.000 € (10 personas x 100 €).
+            </span>
+          </div>
+
+          <button type="submit" class="btn-primary-action">Guardar Ajustes</button>
+        </form>
+
+        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 10px 0;">
+
+        <div>
+          <div class="section-title" style="font-size: 0.95rem; color: var(--danger); margin-bottom: 6px;">
+            <span>🔄</span>
+            <span>Reiniciar Ciclo</span>
+          </div>
+          <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 10px;">
+            Borra los pagos y entregas para empezar una nueva tanda de 10 meses. Los nombres y turnos se conservan.
+          </p>
+          <button type="button" id="btn-reset-cycle" class="quick-btn" style="color: var(--danger); border-color: rgba(239, 68, 68, 0.4); padding: 10px 16px;">
+            Reiniciar Pagos y Entregas
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal de Animación de Sorteo -->
+  <div id="modal-raffle" class="modal-backdrop">
+    <div class="raffle-modal-box">
+      <div class="section-title" style="color: var(--gold-light);">
+        <span>🎰</span>
+        <span>Sorteando Turnos al Azar</span>
+      </div>
+      <div id="roulette-slot" class="roulette-slot">🎲 Mezclando...</div>
+      <p style="font-size: 0.8rem; color: var(--text-muted);">
+        Asignando un mes del 1 al 10 a cada participante de forma aleatoria...
+      </p>
+      <button type="button" id="btn-close-raffle-modal" class="btn-primary-action" style="width: 100%; display: none;">
+        Ver Resultados del Sorteo
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast Notificación -->
+  <div id="toast-msg" class="toast-msg">Mensaje copiado</div>
+
+  <!-- Barra de Navegación Inferior -->
+  <nav class="bottom-nav">
+    <button type="button" class="nav-tab active" data-tab="mes-actual">
+      <span class="tab-icon">📅</span>
+      <span class="tab-label">Mes Actual</span>
+    </button>
+    <button type="button" class="nav-tab" data-tab="turnos">
+      <span class="tab-icon">🎲</span>
+      <span class="tab-label">Turnos</span>
+    </button>
+    <button type="button" class="nav-tab" data-tab="calendario">
+      <span class="tab-icon">📋</span>
+      <span class="tab-label">Calendario</span>
+    </button>
+    <button type="button" class="nav-tab" data-tab="ajustes">
+      <span class="tab-icon">⚙️</span>
+      <span class="tab-label">Ajustes</span>
+    </button>
+  </nav>
+
+  <!-- Scripts -->
+  <script src="js/ahorro.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

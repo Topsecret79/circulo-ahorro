@@ -1,0 +1,4 @@
+# Test scripts and temporary files
+test_ahorro.js
+generate_icons.py
+deploy_github.py
