@@ -149,6 +149,26 @@ function initRoundControls() {
     showToast('Pagos desmarcados.');
   });
 
+  // Botón editar nombre del beneficiario
+  const btnEditHero = document.getElementById('btn-edit-hero-beneficiary');
+  if (btnEditHero) {
+    btnEditHero.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const r = manager.config.activeRound;
+      const b = manager.getParticipantByTurn(r);
+      if (b) {
+        const nuevo = prompt(`Cambiar nombre de "${b.name}":`, b.name);
+        if (nuevo && nuevo.trim() && nuevo.trim() !== b.name) {
+          manager.editParticipant(b.id, nuevo);
+          renderCurrentRound();
+          renderTurnsList();
+          renderTimeline();
+          showToast(`Nombre actualizado: "${nuevo.trim()}"`);
+        }
+      }
+    });
+  }
+
   // Botón Compartir en WhatsApp
   document.getElementById('btn-share-whatsapp').addEventListener('click', () => {
     const r = manager.config.activeRound;
@@ -193,6 +213,26 @@ function renderCurrentRound() {
     ? `✅ Bote entregado a ${details.beneficiary.name}`
     : `En curso: le toca a ${details.beneficiary.name}`;
 
+  // Tira de selección rápida de mes (1..10)
+  const chipsContainer = document.getElementById('month-chips-strip');
+  if (chipsContainer) {
+    chipsContainer.innerHTML = '';
+    for (let r = 1; r <= details.totalParticipants; r++) {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = `month-chip ${r === currentRound ? 'active' : ''}`;
+      const b = manager.getParticipantByTurn(r);
+      const shortName = b ? b.name.split(' ')[0] : `M${r}`;
+      chip.textContent = `Mes ${r} (${shortName})`;
+      chip.addEventListener('click', () => {
+        manager.setActiveRound(r);
+        sounds.clickPay();
+        renderCurrentRound();
+      });
+      chipsContainer.appendChild(chip);
+    }
+  }
+
   // Tarjeta Héroe: A quién le toca cobrar
   document.getElementById('hero-beneficiary-name').textContent = details.beneficiary.name;
   document.getElementById('hero-avatar').textContent = details.beneficiary.name.charAt(0).toUpperCase();
@@ -233,6 +273,7 @@ function renderCurrentRound() {
   sortedParticipants.forEach(p => {
     const isPaid = manager.isPaymentMade(currentRound, p.id);
     const isBeneficiary = p.turn === currentRound;
+    const history = manager.getParticipantHistory(p.id);
 
     const card = document.createElement('div');
     card.className = `payment-card ${isPaid ? 'paid' : ''}`;
@@ -240,8 +281,11 @@ function renderCurrentRound() {
       <div class="participant-info">
         <div class="participant-turn-pill">${p.turn}º</div>
         <div class="participant-name-wrap">
-          <span class="participant-name">${p.name} ${isBeneficiary ? '🎯 (Cobra este mes)' : ''}</span>
-          <span class="participant-sub">Cuota: ${details.cuota} ${moneda}</span>
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <span class="participant-name">${p.name} ${isBeneficiary ? '🎯' : ''}</span>
+            <button type="button" class="btn-rename-pill" title="Editar nombre de ${p.name}">✏️</button>
+          </div>
+          <span class="participant-sub">Cuota: ${details.cuota} ${moneda} • Pagados: ${history.paidCount} de ${history.totalMonths} meses</span>
         </div>
       </div>
       <div class="payment-status-pill">
@@ -249,11 +293,27 @@ function renderCurrentRound() {
       </div>
     `;
 
+    // Botón de lápiz para editar el nombre de la persona al vuelo
+    const renameBtn = card.querySelector('.btn-rename-pill');
+    renameBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const nuevo = prompt(`Cambiar nombre de "${p.name}":`, p.name);
+      if (nuevo && nuevo.trim() && nuevo.trim() !== p.name) {
+        manager.editParticipant(p.id, nuevo);
+        renderCurrentRound();
+        renderTurnsList();
+        renderTimeline();
+        showToast(`Nombre actualizado: "${nuevo.trim()}"`);
+      }
+    });
+
+    // Toque en la tarjeta marca o desmarca el pago
     card.addEventListener('click', () => {
       const nowPaid = manager.togglePayment(currentRound, p.id);
       if (nowPaid) sounds.clickPay();
       else sounds.clickUnpay();
       renderCurrentRound();
+      renderTimeline();
     });
 
     paymentsContainer.appendChild(card);
@@ -396,6 +456,9 @@ function renderTimeline() {
   const currentRound = manager.config.activeRound;
   const moneda = manager.config.moneda;
 
+  // Renderizar la tabla de control mes a mes
+  renderMatrixTable();
+
   // 1. Grupo: Ya entregados
   const deliveredContainer = document.getElementById('timeline-delivered-list');
   deliveredContainer.innerHTML = '';
@@ -427,6 +490,84 @@ function renderTimeline() {
       waitingContainer.appendChild(card);
     });
   }
+}
+
+// Renderizado de la Matriz / Tabla de Pagos Mes a Mes
+function renderMatrixTable() {
+  const manager = window.ahorroManager;
+  const table = document.getElementById('matrix-table');
+  if (!table) return;
+
+  const matrix = manager.getGlobalPaymentMatrix();
+  const totalRounds = manager.participants.length;
+
+  let html = '<thead><tr><th>Persona</th>';
+  for (let r = 1; r <= totalRounds; r++) {
+    html += `<th>M${r}</th>`;
+  }
+  html += '<th>Pagados</th></tr></thead><tbody>';
+
+  matrix.forEach(row => {
+    html += `<tr>`;
+    html += `<td>
+      <span class="matrix-person-name">${row.participant.name}</span>
+      <button type="button" class="btn-rename-pill" data-id="${row.participant.id}" title="Editar nombre">✏️</button>
+    </td>`;
+
+    row.months.forEach(m => {
+      const isPaid = m.paid;
+      const isBen = m.isBeneficiary;
+      const icon = isPaid ? '✅' : '⚪';
+      const title = `Mes ${m.round}: ${row.participant.name} (${isPaid ? 'Pagado' : 'Pendiente'})${isBen ? ' - Cobra este mes 🎯' : ''}`;
+      html += `<td>
+        <span class="matrix-cell-check" data-round="${m.round}" data-id="${row.participant.id}" title="${title}">
+          ${icon}
+        </span>
+      </td>`;
+    });
+
+    html += `<td>
+      <span class="matrix-total-badge">${row.paidCount}/${row.totalMonths}</span>
+    </td>`;
+    html += `</tr>`;
+  });
+
+  html += '</tbody>';
+  table.innerHTML = html;
+
+  // Manejador de clics en las casillas para marcar/desmarcar mes a mes
+  table.querySelectorAll('.matrix-cell-check').forEach(cell => {
+    cell.addEventListener('click', () => {
+      const r = parseInt(cell.getAttribute('data-round'), 10);
+      const id = parseInt(cell.getAttribute('data-id'), 10);
+      const nowPaid = manager.togglePayment(r, id);
+      if (nowPaid) sounds.clickPay();
+      else sounds.clickUnpay();
+      renderMatrixTable();
+      renderCurrentRound();
+      renderTimeline();
+    });
+  });
+
+  // Manejador de botones de lápiz para editar nombres en la tabla
+  table.querySelectorAll('.btn-rename-pill').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = parseInt(btn.getAttribute('data-id'), 10);
+      const p = manager.participants.find(x => x.id === id);
+      if (p) {
+        const nuevo = prompt(`Cambiar nombre de "${p.name}":`, p.name);
+        if (nuevo && nuevo.trim() && nuevo.trim() !== p.name) {
+          manager.editParticipant(id, nuevo);
+          renderMatrixTable();
+          renderCurrentRound();
+          renderTurnsList();
+          renderTimeline();
+          showToast(`Nombre actualizado: "${nuevo.trim()}"`);
+        }
+      }
+    });
+  });
 }
 
 function createTimelineCard(item, statusType, moneda) {

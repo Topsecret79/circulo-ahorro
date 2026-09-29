@@ -34,12 +34,17 @@
     <section id="pane-mes-actual" class="tab-pane active">
       <!-- Selector de Mes / Ronda -->
       <div class="round-nav-card">
-        <button type="button" class="round-nav-btn" id="btn-prev-round">◀ Mes Anterior</button>
+        <button type="button" class="round-nav-btn" id="btn-prev-round">◀ Anterior</button>
         <div class="round-nav-info">
           <div class="round-nav-title" id="round-nav-title">Mes 1 de 10</div>
           <div class="round-nav-sub" id="round-nav-sub">Cargando...</div>
         </div>
-        <button type="button" class="round-nav-btn" id="btn-next-round">Siguiente Mes ▶</button>
+        <button type="button" class="round-nav-btn" id="btn-next-round">Siguiente ▶</button>
+      </div>
+
+      <!-- Tira de Selección Rápida de Mes (1..10) -->
+      <div id="month-chips-strip" class="month-chips-strip">
+        <!-- Renderizado dinámico -->
       </div>
 
       <!-- Tarjeta Destacada: A quién le toca cobrar -->
@@ -52,7 +57,10 @@
           <div class="hero-name-wrap">
             <div class="hero-avatar" id="hero-avatar">P</div>
             <div>
-              <div class="hero-name" id="hero-beneficiary-name">-</div>
+              <div style="display: flex; align-items: center; gap: 4px;">
+                <span class="hero-name" id="hero-beneficiary-name">-</span>
+                <button type="button" id="btn-edit-hero-beneficiary" class="btn-rename-pill" title="Editar nombre">✏️</button>
+              </div>
               <div style="font-size: 0.78rem; color: var(--gold-light); font-weight: 700;">Beneficiario del Bote</div>
             </div>
           </div>
@@ -156,11 +164,27 @@
         <span>Estado Global del Ciclo</span>
       </div>
       <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 6px;">
-        Toca cualquier tarjeta para ver directamente los detalles y pagos de ese mes.
+        Toca cualquier mes o casilla para ver o cambiar su estado.
       </p>
 
+      <!-- Tabla / Matriz General de Pagos Mes a Mes -->
+      <div class="matrix-table-card">
+        <div class="section-title" style="font-size: 0.95rem; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span>🗓️</span>
+            <span>Control de Pagos Mes a Mes</span>
+          </div>
+          <span style="font-size: 0.72rem; color: var(--emerald-light); font-weight: 700;">Toca cualquier casilla</span>
+        </div>
+        <div class="matrix-table-wrap">
+          <table class="matrix-table" id="matrix-table">
+            <!-- Renderizado dinámico -->
+          </table>
+        </div>
+      </div>
+
       <!-- 1. Ya entregados -->
-      <div class="timeline-group">
+      <div class="timeline-group" style="margin-top: 6px;">
         <div class="timeline-group-title delivered">
           <span>✅</span>
           <span>A quién se le ha entregado ya el bote</span>

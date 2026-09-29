@@ -919,3 +919,136 @@ body {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+
+/* Tira de Selección Rápida de Mes (1..10) */
+.month-chips-strip {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px 2px;
+  scrollbar-width: none;
+}
+
+.month-chips-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.month-chip {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.month-chip.active {
+  background: var(--emerald);
+  color: #0b0f19;
+  border-color: var(--emerald);
+  font-weight: 900;
+  box-shadow: 0 2px 8px var(--emerald-glow);
+}
+
+/* Botón de editar nombre al vuelo (Lápiz) */
+.btn-rename-pill {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  margin-left: 4px;
+  transition: all 0.15s ease;
+}
+
+.btn-rename-pill:hover, .btn-rename-pill:active {
+  color: var(--gold-light);
+  transform: scale(1.15);
+}
+
+/* ==========================================================
+   MATRIZ / TABLA GENERAL DE PAGOS MES A MES
+   ========================================================== */
+.matrix-table-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.matrix-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  min-width: 520px;
+}
+
+.matrix-table th {
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  font-weight: 800;
+  padding: 8px 6px;
+  text-align: center;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.matrix-table th:first-child {
+  text-align: left;
+  padding-left: 10px;
+  position: sticky;
+  left: 0;
+  background: var(--bg-elevated);
+  z-index: 2;
+}
+
+.matrix-table td {
+  padding: 8px 6px;
+  text-align: center;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.matrix-table td:first-child {
+  text-align: left;
+  font-weight: 700;
+  color: var(--text-main);
+  padding-left: 10px;
+  position: sticky;
+  left: 0;
+  background: var(--bg-card);
+  z-index: 2;
+}
+
+.matrix-cell-check {
+  font-size: 1.05rem;
+  cursor: pointer;
+  display: inline-block;
+  transition: transform 0.1s;
+}
+
+.matrix-cell-check:active {
+  transform: scale(1.35);
+}
+
+.matrix-total-badge {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--emerald-light);
+  font-weight: 800;
+  padding: 3px 6px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}

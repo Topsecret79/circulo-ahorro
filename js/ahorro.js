@@ -324,6 +324,50 @@ class AhorroManager {
     };
   }
 
+  // Historial de pagos de un participante a lo largo de los 10 meses
+  getParticipantHistory(participantId) {
+    const total = this.participants.length;
+    let paidCount = 0;
+    const paidMonths = [];
+
+    for (let r = 1; r <= total; r++) {
+      if (this.isPaymentMade(r, participantId)) {
+        paidCount++;
+        paidMonths.push(r);
+      }
+    }
+
+    return {
+      paidCount,
+      totalMonths: total,
+      paidMonths,
+      totalContributed: paidCount * this.config.cuota
+    };
+  }
+
+  // Matriz completa de pagos mes a mes (todas las personas x todos los meses)
+  getGlobalPaymentMatrix() {
+    const total = this.participants.length;
+    return this.getParticipantsSortedByTurn().map(p => {
+      const history = this.getParticipantHistory(p.id);
+      const months = [];
+      for (let r = 1; r <= total; r++) {
+        months.push({
+          round: r,
+          paid: this.isPaymentMade(r, p.id),
+          isBeneficiary: p.turn === r
+        });
+      }
+      return {
+        participant: p,
+        months,
+        paidCount: history.paidCount,
+        totalMonths: total,
+        totalContributed: history.totalContributed
+      };
+    });
+  }
+
   // --- GENERADOR DE INFORME PARA WHATSAPP (1 TOQUE) ---
 
   getWhatsAppMessage(roundNum) {
